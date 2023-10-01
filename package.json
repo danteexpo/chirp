@@ -21,11 +21,14 @@
     "@trpc/server": "^10.37.1",
     "@upstash/ratelimit": "^0.4.4",
     "@upstash/redis": "^1.22.1",
+    "clsx": "^2.0.0",
     "dayjs": "^1.11.10",
     "next": "^13.4.19",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hot-toast": "^2.4.1",
     "superjson": "^1.13.1",
+    "tw-merge": "^0.0.1-alpha.3",
     "zod": "^3.21.4"
   },
   "devDependencies": {

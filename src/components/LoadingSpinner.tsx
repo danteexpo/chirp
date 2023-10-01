@@ -1,9 +1,21 @@
-const LoadingSpinner = () => {
+import clsx from "clsx";
+import type { ClassValue } from "clsx";
+import type { HTMLAttributes } from "react";
+import { twMerge } from "tw-merge";
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+const LoadingSpinner = ({ className }: HTMLAttributes<HTMLOrSVGElement>) => {
   return (
     <div role="status">
       <svg
         aria-hidden="true"
-        className="mr-2 h-8 w-8 animate-spin fill-slate-200 text-slate-200 dark:text-slate-600"
+        className={cn(
+          "animate-spin fill-slate-200 text-slate-200 dark:text-slate-600",
+          className,
+        )}
         viewBox="0 0 100 101"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -22,12 +34,4 @@ const LoadingSpinner = () => {
   );
 };
 
-const Loading = () => {
-  return (
-    <div className="flex h-full items-center justify-center p-4">
-      <LoadingSpinner />
-    </div>
-  );
-};
-
-export default Loading;
+export default LoadingSpinner;
