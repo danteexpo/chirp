@@ -1,16 +1,26 @@
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import Head from "next/head";
 import Image from "next/image";
-
+import { useState } from "react";
 import { type RouterOutputs, api } from "~/utils/api";
-
-import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Loading from "~/components/LoadingSpinner";
+import dayjs from "dayjs";
 dayjs.extend(relativeTime);
 
 const CreatePostWizard = () => {
   const { user } = useUser();
+
+  const [input, setInput] = useState("");
+
+  const ctx = api.useContext();
+
+  const { mutate, isLoading: isPosting } = api.posts.create.useMutation({
+    onSuccess: () => {
+      setInput("");
+      void ctx.posts.getAll.invalidate();
+    },
+  });
 
   if (!user) return null;
 
@@ -19,15 +29,24 @@ const CreatePostWizard = () => {
       <Image
         src={user.profileImageUrl}
         alt={`@${user.username}'s profile image` ?? "Profile image"}
-        height={48}
-        width={48}
+        height={52}
+        width={52}
         className="rounded-full"
       />
       <input
         type="text"
         placeholder="Type emojis!"
-        className="grow border border-slate-400 bg-transparent p-3 outline-none"
+        className="grow border border-slate-400 bg-transparent p-3 text-lg outline-none"
+        value={input}
+        onChange={(e) => setInput(e.currentTarget.value)}
+        disabled={isPosting}
       />
+      <button
+        className="border border-slate-400 p-3"
+        onClick={() => mutate({ content: input })}
+      >
+        Post
+      </button>
       <span className="border border-slate-400 p-3">
         <SignOutButton />
       </span>
@@ -45,8 +64,8 @@ const PostView = (props: PostWithAuthor) => {
       <Image
         src={author.profileImageUrl}
         alt={`@${author.username}'s profile image` ?? "Profile image"}
-        height={48}
-        width={48}
+        height={52}
+        width={52}
         className="rounded-full"
       />
       <span className="flex flex-col">
@@ -56,7 +75,7 @@ const PostView = (props: PostWithAuthor) => {
             ~ {dayjs(post.createdAt).fromNow()}
           </p>
         </span>
-        <p className="text-md">{post?.content}</p>
+        <p className="text-lg">{post?.content}</p>
       </span>
     </div>
   );
@@ -97,7 +116,7 @@ export default function Home() {
         <div className="h-full w-full md:max-w-2xl md:border-x md:border-x-slate-400">
           <div className="flex border-b border-b-slate-400 p-4">
             {!isSignedIn && <SignInButton />}
-            {isSignedIn && CreatePostWizard()}
+            {isSignedIn && <CreatePostWizard />}
           </div>
           <Feed />
         </div>
