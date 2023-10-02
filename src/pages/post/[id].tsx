@@ -5,7 +5,7 @@ import PostView from "~/components/PostView";
 import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 
 const PostPage: NextPage<{ id: string }> = ({ id }) => {
-  const { data } = api.posts.getPostById.useQuery({
+  const { data } = api.posts.getById.useQuery({
     id,
   });
 
@@ -25,7 +25,7 @@ export const getStaticProps: GetStaticProps = async (context) => {
 
   if (typeof id !== "string") throw new Error("no id");
 
-  await helpers.posts.getPostById.prefetch({ id });
+  await helpers.posts.getById.prefetch({ id });
 
   return {
     props: {

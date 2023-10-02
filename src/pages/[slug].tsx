@@ -8,7 +8,7 @@ import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 
 const ProfileFeed = (props: { userId: string }) => {
   const { data: posts, isLoading: postsLoading } =
-    api.posts.getPostsByUserId.useQuery({
+    api.posts.getManyByUserId.useQuery({
       userId: props.userId,
     });
 
