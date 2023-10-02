@@ -1,15 +1,11 @@
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
-import Head from "next/head";
 import Image from "next/image";
 import { useState } from "react";
-import { type RouterOutputs, api } from "~/utils/api";
-import relativeTime from "dayjs/plugin/relativeTime";
+import { api } from "~/utils/api";
 import LoadingSpinner from "~/components/LoadingSpinner";
-import dayjs from "dayjs";
 import toast from "react-hot-toast";
-import Link from "next/link";
 import PageLayout from "~/components/PageLayout";
-dayjs.extend(relativeTime);
+import PostView from "~/components/PostView";
 
 const CreatePostWizard = () => {
   const { user } = useUser();
@@ -78,39 +74,8 @@ const CreatePostWizard = () => {
   );
 };
 
-type PostWithAuthor = RouterOutputs["posts"]["getAll"][number];
-
-const PostView = (props: PostWithAuthor) => {
-  const { post, author } = props;
-
-  return (
-    <div className="flex items-center gap-6 border-b border-b-slate-400 p-4">
-      <Image
-        src={author.profileImageUrl}
-        alt={`@${author.username}'s profile image` ?? "Profile image"}
-        height={52}
-        width={52}
-        className="rounded-full"
-      />
-      <span className="flex flex-col">
-        <span className="flex gap-1">
-          <Link href={`@${author.username}`}>
-            <p className="font-bold">@{author.username}</p>
-          </Link>
-          <p className="font-light text-slate-400">
-            ~ {dayjs(post.createdAt).fromNow()}
-          </p>
-        </span>
-        <Link href={`post/${post.id}`}>
-          <p className="text-lg">{post?.content}</p>
-        </Link>
-      </span>
-    </div>
-  );
-};
-
 const Feed = () => {
-  const { data, isLoading: postsLoading } = api.posts.getAll.useQuery();
+  const { data: posts, isLoading: postsLoading } = api.posts.getAll.useQuery();
 
   if (postsLoading)
     return (
@@ -119,11 +84,11 @@ const Feed = () => {
       </div>
     );
 
-  if (!data) return <p>Something went wrong</p>;
+  if (!posts) return <p>Something went wrong</p>;
 
   return (
     <div className="flex flex-col">
-      {data.map((postWithAuthor) => (
+      {posts.map((postWithAuthor) => (
         <PostView {...postWithAuthor} key={postWithAuthor.post.id} />
       ))}
     </div>
