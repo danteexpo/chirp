@@ -1,5 +1,10 @@
 import type { GetStaticProps, NextPage } from "next";
 import { api } from "~/utils/api";
+import PageLayout from "~/components/PageLayout";
+import Image from "next/image";
+import LoadingSpinner from "~/components/LoadingSpinner";
+import PostView from "~/components/PostView";
+import { generateSSGHelper } from "~/server/helpers/ssgHelper";
 
 const ProfileFeed = (props: { userId: string }) => {
   const { data: posts, isLoading: postsLoading } =
@@ -33,43 +38,28 @@ const ProfilePage: NextPage<{ username: string }> = ({ username }) => {
   if (!user) return <div>404</div>;
 
   return (
-    <>
-      <PageLayout>
-        <div className="border-b border-b-slate-400">
-          <span className="relative block h-32 bg-slate-400 text-lg">
-            <Image
-              src={user.profileImageUrl}
-              alt={`@${user.username}'s profile image` ?? "Profile image"}
-              height={96}
-              width={96}
-              className="absolute -bottom-12 left-12 rounded-full border-4 border-black"
-            />
-          </span>
-          <span className="flex h-32 items-center pl-8">
-            <p className="text-xl font-bold">@{user.username}</p>
-          </span>
-        </div>
-        <ProfileFeed userId={user.id} />
-      </PageLayout>
-    </>
+    <PageLayout>
+      <div className="border-b border-b-slate-400">
+        <span className="relative block h-32 bg-slate-400 text-lg">
+          <Image
+            src={user.profileImageUrl}
+            alt={`@${user.username}'s profile image` ?? "Profile image"}
+            height={96}
+            width={96}
+            className="absolute -bottom-12 left-12 rounded-full border-4 border-black"
+          />
+        </span>
+        <span className="flex h-32 items-center pl-8">
+          <p className="text-xl font-bold">@{user.username}</p>
+        </span>
+      </div>
+      <ProfileFeed userId={user.id} />
+    </PageLayout>
   );
 };
 
-import { createServerSideHelpers } from "@trpc/react-query/server";
-import { appRouter } from "~/server/api/root";
-import { db } from "~/server/db";
-import superjson from "superjson";
-import PageLayout from "~/components/PageLayout";
-import Image from "next/image";
-import LoadingSpinner from "~/components/LoadingSpinner";
-import PostView from "~/components/PostView";
-
 export const getStaticProps: GetStaticProps = async (context) => {
-  const helpers = createServerSideHelpers({
-    router: appRouter,
-    ctx: { db, userId: null },
-    transformer: superjson, // optional - adds superjson serialization
-  });
+  const helpers = generateSSGHelper();
 
   const slug = context.params?.slug;
 
