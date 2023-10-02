@@ -7,6 +7,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import LoadingSpinner from "~/components/LoadingSpinner";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
+import Link from "next/link";
 dayjs.extend(relativeTime);
 
 const CreatePostWizard = () => {
@@ -92,12 +93,16 @@ const PostView = (props: PostWithAuthor) => {
       />
       <span className="flex flex-col">
         <span className="flex gap-1">
-          <p className="font-bold">@{author.username}</p>
+          <Link href={`@${author.username}`}>
+            <p className="font-bold">@{author.username}</p>
+          </Link>
           <p className="font-light text-slate-400">
             ~ {dayjs(post.createdAt).fromNow()}
           </p>
         </span>
-        <p className="text-lg">{post?.content}</p>
+        <Link href={`post/${post.id}`}>
+          <p className="text-lg">{post?.content}</p>
+        </Link>
       </span>
     </div>
   );
@@ -108,7 +113,7 @@ const Feed = () => {
 
   if (postsLoading)
     return (
-      <div className="flex h-full items-center justify-center p-4">
+      <div className="flex h-screen items-center justify-center p-4">
         <LoadingSpinner className="h-8 w-8" />
       </div>
     );
